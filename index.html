@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Colours</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Display different colours information">
+        <meta name="author" content="Yushun Zeng">
+
+        <!-- Bootstrap core CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        
+        <!-- CSS style -->
+        <style type="text/css">
+            .header {
+                background-color: #333333;
+                color: white;
+                width: 100%;
+                padding: 15px;
+                margin-bottom: 10px;
+                left: 0;
+                right: 0;
+                top: 0;
+                font-size: x-large;
+                vertical-align: center;
+            }
+
+            .main-title {
+                padding: 10px;
+            }
+
+            .footer {
+                background-color: #333333;
+                color: white;
+                position: fixed;
+                width: 100%;
+                padding: 10px;
+                left: 0;
+                right: 0;
+                z-index: 2000;
+                bottom: 0;
+                font-size: small;
+                text-align: center;
+            }
+
+            .text {
+                padding: 1rem;
+                width: 100%;
+                position: relative;
+            }
+
+            @keyframes animated-border {
+                0% {
+                    box-shadow: 0 0 0 0 rgb(131, 125, 125, 0.4);
+                }
+                100% {
+                    box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+                }
+            }
+
+            #colourDetailContainer {
+                animation: animated-border 3s infinite;
+                font-family: Arial;
+                font-size: 18px;
+                line-height: 30px;
+                font-weight: bold;
+                color: rgb(131, 125, 125);
+                border: 2px solid;
+                border-radius: 10px;
+                padding: 15px;
+            }
+
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 20px 0;
+                font-size: 18px;
+            }
+
+            .pagination a,
+            .pagination .page a,
+            .pagination span,
+            .pagination input {
+                margin: 0 10px;
+                padding: 5px 10px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                color: #000;
+                text-decoration: none;
+            }
+
+            .pagination button {
+                background-color: #0d6efd;
+                margin: 0 10px;
+                padding: 5px 10px;
+                border: 1px solid #cccccc;
+                border-radius: 3px;
+                color: #fff;
+                text-decoration: none;
+            }
+
+            .pagination a:hover {
+                background-color: #f0f0f0;
+            }
+
+            .pagination button:hover {
+                background-color: #0b5ed7;
+            }
+
+            .pagination a.prev,
+            .pagination a.next {
+                font-weight: bold;
+            }
+
+            .pagination a.page.active {
+                background-color: #0d6efd;
+                color: #fff;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <!-- Header Start -->
+        <header id="header" class="header">
+            <span id="main-title" class="main-title">Colours</span>
+        
+            <div style="float: right;" class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Navigation
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#colourOpeartion">Colour Detail</a></li>
+                    <li><a class="dropdown-item" href="#colourContainer">Colour Table</a></li>
+                </ul>
+            </div>
+        </header>
+        <!-- Header End -->
+
+        <!-- Alert Start -->
+        <div id="liveAlertPlaceholder" style="text-align: center; margin-top: 40px;"></div>
+        <!-- Alert End -->
+
+        <!-- Colour Opeartions Start -->
+        <div id="operationContainer" class="container text-center" style="text-align: center; margin-top: 40px;">
+            <div class="row justify-content-md-center">
+                <div class="col col-2">
+                    <button id="newColour" class="btn btn-primary" onclick="scalePurpose()">New Colour</button>
+                </div>
+                <div class="col col-2">
+                    <button id="removeColour" class="btn btn-primary" onclick="animateTechnologiesNarrow()">Remove Colour</button>
+                </div>
+                <div class="col col-2">
+                    <button id="modifyColour" class="btn btn-primary" onclick="changeThemeColour()">Modify Colour</button>
+                </div>
+                <div class="col col-2">
+                    <button id="selectBackground" class="btn btn-primary" onclick="changeThemeColour()">Select Background</button>
+                </div>
+            </div>
+        </div>
+        <!-- Colour Opeartions End -->
+
+        <!-- Colour Detail Start -->
+        <div id="colourDetailContainer" style="margin:0 auto; width: 70%; margin-top: 40px;">
+            <div class="row">
+                <div class="col-9">
+                    <div class="row mb-3" style="padding-top: 30px;">
+                        <label for="colorId" class="col-sm-3 col-form-label" style="text-align: center;">Colour ID:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="colorId" placeholder="Colour ID">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="hexString" class="col-sm-3 col-form-label" style="text-align: center;">Colour HEX:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="hexString" placeholder="Colour HEX">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="rgb" class="col-sm-3 col-form-label" style="text-align: center;">Colour RGB:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="rgb" placeholder="Colour RGB">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="hsl" class="col-sm-3 col-form-label" style="text-align: center;">Colour HSL:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="hsl" placeholder="Colour HSL">
+                        </div>
+                    </div>
+                    <div class="row mb-3" style="padding-bottom: 10px;">
+                        <label for="name" class="col-sm-3 col-form-label" style="text-align: center;">Colour Name:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="name" placeholder="Colour Name">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3" style="display: flex; justify-content: center; align-items: center;">
+                    <div style="width: 180px; height: 180px; background-color: #333333;">
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <div class="pagination">
+                    <a href="#" class="prev">&laquo; Prev</a>
+                    <a href="#" class="next">Next &raquo;</a>
+                    <span>Page 1 of N</span>
+                    <input type="number" min="1" max="256" value="1">
+                    <button class="go">Go</button>
+                </div>
+            </div>
+        </div>
+        <!-- Colour Detail End -->
+
+        <!-- Load Table Button Start -->
+        <div id="colourTableButtonContainer" style="text-align: center; margin-top: 40px;">
+            <button id="colourTableButton" class="btn btn-primary" onclick="loadTable()">Load Table</button>
+        </div>
+        <!-- Load Table Button End -->
+
+        <!-- Colour Table Start -->
+        <div id="colourTableContainer" style="display: none;">
+            <table class="table table-striped" style="margin:0 auto; margin-top: 25px; margin-bottom: 25px; width: 60%; text-align: center;">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Colour</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">HEX</th>
+                        <th scope="col">RGB</th>
+                        <th scope="col">HSL</th>
+                    </tr>
+                </thead>
+                <tbody id="mainTable">
+                </tbody>
+            </table>
+        </div>
+        <!-- Colour Table End -->
+
+        <!-- Footer Start -->
+        <div style="margin-top: 100px;"></div>
+        <footer id="footer" class="footer">
+            Yushun Zeng 2023 | Colours | <a href="https://github.com/D18130495/Country-Table" target="_blank">Github</a>
+        </footer>
+        <!-- Footer End -->
+
+        <!-- Scripts Start -->
+        <!-- Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        
+        <!-- Import the index.js -->
+        <script src="./index.js"></script>
+
+        <!-- Scripts End -->
+    </body>
+</html>
