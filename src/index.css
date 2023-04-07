@@ -1,0 +1,115 @@
+.header {
+    background-color: #333333;
+    color: white;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    left: 0;
+    right: 0;
+    top: 0;
+    font-size: x-large;
+    vertical-align: center;
+}
+
+.main-title {
+    padding: 10px;
+}
+
+.footer {
+    background-color: #333333;
+    color: white;
+    position: fixed;
+    width: 100%;
+    padding: 10px;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    bottom: 0;
+    font-size: small;
+    text-align: center;
+}
+
+.text {
+    padding: 1rem;
+    width: 100%;
+    position: relative;
+}
+
+/* colour detail container */
+@keyframes animated-border {
+    0% {
+        box-shadow: 0 0 0 0 rgb(131, 125, 125, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+    }
+}
+
+#colourDetailContainer {
+    animation: animated-border 3s infinite;
+    font-family: Arial;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: bold;
+    color: rgb(131, 125, 125);
+    border: 2px solid;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+/* pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    font-size: 18px;
+}
+
+.pagination a,
+.pagination .page a,
+.pagination span,
+.pagination input {
+    margin: 0 10px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #000;
+    text-decoration: none;
+}
+
+.pagination button {
+    background-color: #0d6efd;
+    margin: 0 10px;
+    padding: 5px 10px;
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination button:hover {
+    background-color: #0b5ed7;
+}
+
+.pagination a.prev,
+.pagination a.next {
+    font-weight: bold;
+}
+
+.pagination a.page.active {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+/* remove input number arrow */
+    .no-arrows::-webkit-outer-spin-button,
+    .no-arrows::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+  

@@ -15,7 +15,7 @@ app.use(express.static(__dirname + '/'));
 let colours = JSON.parse(fs.readFileSync('./json/colours.json', 'utf8'));
 
 // Define routes using separate module
-app.use('/colours', colourRouter(colours));
+app.use('/', colourRouter(colours));
 
 // Custom 404 page
 app.use((req, res, next) => {
