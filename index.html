@@ -39,7 +39,7 @@
 
         <!-- New Modal Start -->
         <div class="modal fade" id="newModal" tabindex="-1" aria-labelledby="newModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="newModalLabel">New colour</h1>
@@ -67,17 +67,17 @@
                                     <div class="row">
                                         <label for="newR" class="col-sm-1 col-form-label" style="text-align: center;">R:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="newR" placeholder="R">
+                                            <input type="number" min="0" max="255" class="form-control" id="newR" placeholder="R">
                                         </div>
 
                                         <label for="newG" class="col-sm-1 col-form-label" style="text-align: center;">G:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="newG" placeholder="G">
+                                            <input type="number" min="0" max="255" class="form-control" id="newG" placeholder="G">
                                         </div>
                                         
                                         <label for="newB" class="col-sm-1 col-form-label" style="text-align: center;">B:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="newB" placeholder="B">
+                                            <input type="number" min="0" max="255" class="form-control" id="newB" placeholder="B">
                                         </div>
                                     </div>
                                 </div>
@@ -88,17 +88,17 @@
                                     <div class="row">
                                         <label for="newH" class="col-sm-1 col-form-label" style="text-align: center;">H:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="newH" placeholder="H">
+                                            <input type="text" min="0" max="360" class="form-control no-arrows" id="newH" placeholder="H" disabled>
                                         </div>
 
                                         <label for="newS" class="col-sm-1 col-form-label" style="text-align: center;">S:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="newS" placeholder="S">
+                                            <input type="text" min="0" max="100" class="form-control no-arrows" id="newS" placeholder="S" disabled>
                                         </div>
                                         
                                         <label for="newL" class="col-sm-1 col-form-label" style="text-align: center;">L:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="newL" placeholder="L">
+                                            <input type="text" min="0" max="100" class="form-control no-arrows" id="newL" placeholder="L" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -111,14 +111,14 @@
                             </div>
                         </div>
                         <div class="col-4" div style="display: flex; justify-content: center; align-items: center;">
-                            <toolcool-color-picker color="#B48CF4" button-width="12rem" button-height="12rem"></toolcool-color-picker>
+                            <toolcool-color-picker id="color-picker-new" color="#ffffff" button-width="12rem" button-height="12rem"></toolcool-color-picker>
                         </div>
                     </div>
                     </div>
                     
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="newColour()">Create</button>
+                        <button type="button" class="btn btn-primary" onclick="newColour()">Create</button>
                     </div>
                 </div>
             </div>
@@ -127,7 +127,7 @@
 
         <!-- Modify Modal Start -->
         <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="modifyModalLabel">Modify colour</h1>
@@ -138,62 +138,62 @@
                         <div class="row">
                         <div class="col-8">
                             <div class="row mb-3" style="padding-top: 20px;">
-                                <label for="modifyColorId" class="col-sm-3 col-form-label" style="text-align: center;">Colour ID:</label>
-                                <div class="col-sm-9">
+                                <label for="modifyColorId" class="col-sm-2 col-form-label" style="text-align: center;">ID:</label>
+                                <div class="col-sm-10">
                                     <input type="text" class="form-control" id="modifyColorId" placeholder="Colour ID" style="cursor: not-allowed;" disabled>
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="modifyHexString" class="col-sm-3 col-form-label" style="text-align: center;">Colour HEX:</label>
-                                <div class="col-sm-9">
+                                <label for="modifyHexString" class="col-sm-2 col-form-label" style="text-align: center;">HEX:</label>
+                                <div class="col-sm-10">
                                     <input type="text" class="form-control" id="modifyHexString" placeholder="Colour HEX">
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="modifyRgb" class="col-sm-3 col-form-label" style="text-align: center;">Colour RGB:</label>
-                                <div class="col-sm-9">
+                                <label for="modifyRgb" class="col-sm-2 col-form-label" style="text-align: center;">RGB:</label>
+                                <div class="col-sm-10">
                                     <div class="row">
                                         <label for="modifyR" class="col-sm-1 col-form-label" style="text-align: center;">R:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="modifyR" placeholder="R">
+                                            <input type="number" min="0" max="255" class="form-control" id="modifyR" placeholder="R">
                                         </div>
 
                                         <label for="modifyG" class="col-sm-1 col-form-label" style="text-align: center;">G:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="modifyG" placeholder="G">
+                                            <input type="number" min="0" max="255" class="form-control" id="modifyG" placeholder="G">
                                         </div>
                                         
                                         <label for="modifyB" class="col-sm-1 col-form-label" style="text-align: center;">B:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="modifyB" placeholder="B">
+                                            <input type="number" min="0" max="255" class="form-control" id="modifyB" placeholder="B">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="modifyHsl" class="col-sm-3 col-form-label" style="text-align: center;">Colour HSL:</label>
-                                <div class="col-sm-9">
+                                <label for="modifyHsl" class="col-sm-2 col-form-label" style="text-align: center;">HSL:</label>
+                                <div class="col-sm-10">
                                     <div class="row">
                                         <label for="modifyH" class="col-sm-1 col-form-label" style="text-align: center;">H:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="modifyH" placeholder="H">
+                                            <input type="text" min="0" max="360" class="form-control" id="modifyH" placeholder="H" disabled>
                                         </div>
 
                                         <label for="modifyS" class="col-sm-1 col-form-label" style="text-align: center;">S:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="modifyS" placeholder="S">
+                                            <input type="text" min="0" max="100" class="form-control" id="modifyS" placeholder="S" disabled>
                                         </div>
                                         
                                         <label for="modifyL" class="col-sm-1 col-form-label" style="text-align: center;">L:</label>
                                         <div class="col-sm-3">
-                                            <input type="number" class="form-control no-arrows" id="modifyL" placeholder="L">
+                                            <input type="text" min="0" max="100" class="form-control" id="modifyL" placeholder="L" disabled>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3" style="padding-bottom: 10px;">
-                                <label for="modifyName" class="col-sm-3 col-form-label" style="text-align: center;">Colour Name:</label>
-                                <div class="col-sm-9">
+                                <label for="modifyName" class="col-sm-2 col-form-label" style="text-align: center;">Name:</label>
+                                <div class="col-sm-10">
                                     <input type="text" class="form-control" id="modifyName" placeholder="Colour Name">
                                 </div>
                             </div>
@@ -206,7 +206,7 @@
                     
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="modifyColour()">Update</button>
+                        <button type="button" class="btn btn-primary" onclick="modifyColour()">Update</button>
                     </div>
                 </div>
             </div>
@@ -348,6 +348,9 @@
 
         <!-- Colour picker -->
         <script src="https://cdn.jsdelivr.net/npm/toolcool-color-picker/dist/toolcool-color-picker.min.js"></script>
+
+        <!-- Colour converter -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chromatism/3.0.0/chromatism.umd.js" integrity="sha512-1eIoyvpelWGJpmn33PfCBb3s+xZRHn2nwPf4BKRHaLRZhcgjpg6bQQzbYP1w4QJAsCdOD2EL5ea+/bu9/tq8zw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
         <!-- Import the index.js -->
         <script src="./src/index.js"></script>

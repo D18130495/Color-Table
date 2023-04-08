@@ -17,8 +17,12 @@ function getColourByColourId(colourId) {
 }
 
 // create a new colour
-function createColour() {
-    return axios.post("/colours");
+function createColour(colourData) {
+    return  axios({
+        method: 'post',
+        url:'/colours/',
+        data: colourData
+    });
 }
 
 // update colour by colour Id
@@ -160,7 +164,7 @@ function createColourCard(colourId) {
             $('#colorId').val(response.data.data.colorId);
             $('#hexString').val(response.data.data.hexString);
             $('#rgb').val('R:' + response.data.data.rgb.r + ' G:' + response.data.data.rgb.g + ' B:' + response.data.data.rgb.b);
-            $('#hsl').val('H:' + response.data.data.hsl.h + ' S:' + response.data.data.hsl.s + ' L:' + response.data.data.hsl.l);
+            $('#hsl').val('H:' + Math.round(response.data.data.hsl.h) + ' S:' + Math.round(response.data.data.hsl.s) + ' L:' + Math.round(response.data.data.hsl.l));
             $('#name').val(response.data.data.name);
             $('#displayColour').css('background-color', response.data.data.hexString);
         })
@@ -388,10 +392,142 @@ function setLastVisitCookie(lastIndex) {
 // create colour
 function initialNewColourForm() {
     $('#newColorId').val(responseColourList.slice(-1)[0].colorId + 1);
+    $('#newHexString').val('#ffffff');
+    $('#newR').val(0);
+    $('#newG').val(0);
+    $('#newB').val(0);
+    $('#newH').val(0);
+    $('#newS').val(0);
+    $('#newL').val(0);
+    $('#newName').val();
+}
+
+const $colorPickerNew = document.getElementById('color-picker-new');
+
+$colorPickerNew.addEventListener('change', (evt) => {
+    $('#newHexString').val(evt.detail.hex);
+
+    const rgb = chromatism.convert(evt.detail.hex).rgb;
+    const hsl = chromatism.convert(rgb).hsl;
+
+    $('#newR').val(rgb.r);
+    $('#newG').val(rgb.g);
+    $('#newB').val(rgb.b);
+    
+    $('#newH').val(hsl.h);
+    $('#newS').val(hsl.s);
+    $('#newL').val(hsl.l);
+});
+
+$('#newHexString').on('input', function() {
+    const inputValue = $('#newHexString').val();
+    const hexColorRegex = /^#?([0-9a-fA-F]{6})$/;
+    
+    if(hexColorRegex.test(inputValue)) {
+        $('#newHexString').removeClass('is-invalid');
+
+        // set colour
+        $('#color-picker-new').attr('color', inputValue);
+    }else {
+        $('#newHexString').addClass('is-invalid');
+    }
+});
+
+$("#newR").on('input', function() {
+    changeNewRGB($('#newR').val(), $('#newG').val(), $('#newB').val())
+});
+
+$("#newG").on('input', function() {
+    changeNewRGB($('#newR').val(), $('#newG').val(), $('#newB').val())
+});
+
+$("#newB").on('input', function() {
+    changeNewRGB($('#newR').val(), $('#newG').val(), $('#newB').val())
+});
+
+function changeNewRGB(r, g, b) {
+    const rgbColorRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
+    if(rgbColorRegex.test(r)) {
+        $('#newR').removeClass('is-invalid');
+
+        if(rgbColorRegex.test(g)) {
+            $('#newG').removeClass('is-invalid');
+
+            if(rgbColorRegex.test(b)) {
+                $('#newB').removeClass('is-invalid');
+                
+                const rgb = {
+                    r: parseInt(r),
+                    g: parseInt(g),
+                    b: parseInt(b)
+                };
+            
+                const hex = chromatism.convert(rgb).hex;
+            
+                $('#color-picker-new').attr('color', hex);
+            }else {
+                $('#newB').addClass('is-invalid');
+            }
+        }else {
+            $('#newG').addClass('is-invalid');
+        }
+    }else {
+        $('#newR').addClass('is-invalid');
+    }
 }
 
 function newColour() {
+    // get new colour data
+    colourId = $('#newColorId').val()
+    colourHex = $('#newHexString').val()
+    colourR = $('#newR').val()
+    colourG = $('#newG').val()
+    colourB = $('#newB').val()
+    colourH = $('#newH').val()
+    colourS = $('#newS').val()
+    colourL = $('#newL').val()
+    colourName = $('#newName').val()
+
+    // form modify data
+    const rgbObj = {
+        r: colourR,
+        g: colourG,
+        b: colourB
+    };
+    const rgbJson = JSON.stringify(rgbObj);
+
+    const hslObj = {
+        h: colourH,
+        s: colourS,
+        l: colourL
+    };
+    const hslJson = JSON.stringify(hslObj);
     
+    const colourData = {
+        colorId: colourId,
+        hexString: colourHex,
+        rgb: rgbJson,
+        hsl: hslJson,
+        name: colourName
+    };
+
+    createColour(colourData)
+        .then(response => {
+            Qmsg.success(response.data.message);
+
+            $('#newModal').modal('hide');
+
+            // generate new pagincation and colour card
+            getColourList()
+                .then(response => {
+                    $('.pagination .prev').nextAll().slice(0, 5).remove();
+                    totalColourNumber = response.data.data.length;
+                    responseColourList = response.data.data;
+
+                    createPagination(response.data.data, totalColourNumber, totalColourNumber - 5, totalColourNumber);
+                })
+        })
 }
 
 
@@ -425,45 +561,124 @@ const $colorPicker = document.getElementById('color-picker');
 $colorPicker.addEventListener('change', (evt) => {
     $('#modifyHexString').val(evt.detail.hex);
 
-    const rgbColor = evt.detail.rgb;
-    const rStartIndex = rgbColor.indexOf("(") + 1;
-    const rEndIndex = rgbColor.indexOf(",", rStartIndex);
-    const redValue = parseInt(rgbColor.substring(rStartIndex, rEndIndex));
+    const rgb = chromatism.convert(evt.detail.hex).rgb;
+    const hsl = chromatism.convert(rgb).hsl;
 
-    const gStartIndex = rEndIndex + 1;
-    const gEndIndex = rgbColor.indexOf(",", gStartIndex);
-    const greenValue = parseInt(rgbColor.substring(gStartIndex, gEndIndex));
-
-    const bStartIndex = gEndIndex + 1;
-    const bEndIndex = rgbColor.indexOf(")", bStartIndex);
-    const blueValue = parseInt(rgbColor.substring(bStartIndex, bEndIndex));
-
-    $('#modifyR').val(redValue);
-    $('#modifyG').val(greenValue);
-    $('#modifyB').val(blueValue);
-
-    const hslColor = evt.detail.hsl;
-    const hStartIndex = hslColor.indexOf("(") + 1;
-    const hEndIndex = hslColor.indexOf(",", hStartIndex);
-    const hueValue = parseInt(hslColor.substring(hStartIndex, hEndIndex));
+    $('#modifyR').val(rgb.r);
+    $('#modifyG').val(rgb.g);
+    $('#modifyB').val(rgb.b);
     
-    const sStartIndex = hEndIndex + 1;
-    const sEndIndex = hslColor.indexOf("%", sStartIndex);
-    const saturationValue = parseFloat(hslColor.substring(sStartIndex, sEndIndex));
-    
-    const lStartIndex = sEndIndex + 2;
-    const lEndIndex = hslColor.indexOf("%", lStartIndex);
-    const lightnessValue = parseFloat(hslColor.substring(lStartIndex, lEndIndex));
-    
-
-
-    $('#modifyH').val(hueValue);
-    $('#modifyS').val(saturationValue);
-    $('#modifyL').val(lightnessValue);
+    $('#modifyH').val(hsl.h);
+    $('#modifyS').val(hsl.s);
+    $('#modifyL').val(hsl.l);
 });
 
+$('#modifyHexString').on('input', function() {
+    const inputValue = $('#modifyHexString').val();
+    const hexColorRegex = /^#?([0-9a-fA-F]{6})$/;
+    
+    if(hexColorRegex.test(inputValue)) {
+        $('#modifyHexString').removeClass('is-invalid');
+
+        // set colour
+        $('#color-picker').attr('color', inputValue);
+    }else {
+        $('#modifyHexString').addClass('is-invalid');
+    }
+});
+
+$("#modifyR").on('input', function() {
+    changeUpdateRGB($('#modifyR').val(), $('#modifyG').val(), $('#modifyB').val())
+});
+
+$("#modifyG").on('input', function() {
+    changeUpdateRGB($('#modifyR').val(), $('#modifyG').val(), $('#modifyB').val())
+});
+
+$("#modifyB").on('input', function() {
+    changeUpdateRGB($('#modifyR').val(), $('#modifyG').val(), $('#modifyB').val())
+});
+
+function changeUpdateRGB(r, g, b) {
+    const rgbColorRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
+    if(rgbColorRegex.test(r)) {
+        $('#modifyR').removeClass('is-invalid');
+
+        if(rgbColorRegex.test(g)) {
+            $('#modifyG').removeClass('is-invalid');
+
+            if(rgbColorRegex.test(b)) {
+                $('#modifyB').removeClass('is-invalid');
+                
+                const rgb = {
+                    r: parseInt(r),
+                    g: parseInt(g),
+                    b: parseInt(b)
+                };
+            
+                const hex = chromatism.convert(rgb).hex;
+            
+                $('#color-picker').attr('color', hex);
+            }else {
+                $('#modifyB').addClass('is-invalid');
+            }
+        }else {
+            $('#modifyG').addClass('is-invalid');
+        }
+    }else {
+        $('#modifyR').addClass('is-invalid');
+    }
+}
+
+$("#modifyH").on('input', function() {
+    changeHSL($('#modifyH').val(), $('#modifyS').val(), $('#modifyL').val())
+});
+
+$("#modifyS").on('input', function() {
+    changeHSL($('#modifyH').val(), $('#modifyS').val(), $('#modifyL').val())
+});
+
+$("#modifyL").on('input', function() {
+    changeHSL($('#modifyH').val(), $('#modifyS').val(), $('#modifyL').val())
+});
+
+function changeHSL(h, s, l) {
+    const hColorRegex = /^([0-9]|[1-9][0-9]|[12][0-9]{2}|3[0-5][0-9]|360)(\.[0-9]+)?$/;
+    const slColorRegex = /^([0-9]|[1-9][0-9]|100)(\.[0-9]+)?$/;
+
+    if(!hColorRegex.test(h)) {
+        $('#modifyH').addClass('is-invalid');
+    }else {
+        $('#modifyH').removeClass('is-invalid');
+    }
+
+    if(!slColorRegex.test(s)) {
+        $('#modifyS').addClass('is-invalid');
+    }else {
+        $('#modifyS').removeClass('is-invalid');
+    }
+
+    if(!slColorRegex.test(l)) {
+        $('#modifyL').addClass('is-invalid');
+    }else {
+        $('#modifyL').removeClass('is-invalid');
+    }
+    
+    const hsl = {
+        h: parseFloat(h),
+        s: parseFloat(s),
+        l: parseFloat(l)
+    };
+
+    const hex = chromatism.convert(hsl).hex;
+    console.log(hex)
+
+    $('#color-picker').attr('color', hex);
+}
+
 function modifyColour() {
-    // get modify colour Id
+    // get modify colour data
     colourId = $('#modifyColorId').val()
     colourHex = $('#modifyHexString').val()
     colourR = $('#modifyR').val()
@@ -497,11 +712,36 @@ function modifyColour() {
         name: colourName
     };
 
-    console.log(colourData)
-
     updateColourByColourId(colourId, colourData)
         .then(response => {
+            Qmsg.success(response.data.message);
 
+            $('#modifyModal').modal('hide');
+
+            // get active colour page number
+            activePageNumber = $('.pagination .page').filter(function() {
+                return $(this).hasClass('active');
+            }).text();
+            activePageNumber = parseInt(activePageNumber);
+
+            // generate new pagincation and colour card
+            getColourList()
+                .then(response => {
+                    $('.pagination .prev').nextAll().slice(0, 5).remove();
+                    totalColourNumber = response.data.data.length;
+                    responseColourList = response.data.data;
+
+                    // handle edge page
+                    if(activePageNumber === 1) {
+                        createPagination(response.data.data, 1, 0, 4);
+                    }else if(activePageNumber === 2) {
+                        createPagination(response.data.data, 2, 0, 4);
+                    }else if(activePageNumber > (totalColourNumber) - 2) {
+                        createPagination(response.data.data, activePageNumber, totalColourNumber - 5, totalColourNumber);
+                    }else {
+                        createPagination(response.data.data, activePageNumber, activePageNumber - 3, activePageNumber + 1);
+                    }
+                })
         })
 }
 
