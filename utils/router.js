@@ -6,7 +6,7 @@ const validator = require("./validator");
 
 router.use(bodyParser.json());
 
-// Custom return result
+// custom return result
 function customResult(req, res, next) {
     res.result = function(status, data, message, statusName) {
       res.send({ status: status, data: data, message: message, statusName: statusName });
@@ -15,6 +15,9 @@ function customResult(req, res, next) {
     next();
 }
 
+router.use(customResult);
+
+// custom return status
 const status = {
     SUCCESS: {
         status: 200,
@@ -65,8 +68,6 @@ const status = {
         statusName: "Bad request"
     }
 }
-  
-router.use(customResult);
 
 module.exports = (colours) => {
     // get all colours
@@ -153,11 +154,11 @@ module.exports = (colours) => {
         rgbJson = JSON.parse(req.body.rgb)
         hslJson = JSON.parse(req.body.hsl)
 
-        newColour = {
+        const newColour = {
             colorId: parseInt(req.body.colorId),
             hexString: req.body.hexString,
             rgb: { r: parseInt(rgbJson.r), g: parseInt(rgbJson.g), b: parseInt(rgbJson.b) },
-            hsl: { h: parseFloat(hslJson.h), s: parseFloat(hslJson.s), l: parseFloat(hslJson.l) },
+            hsl: { h: Math.round(parseFloat(hslJson.h)), s: Math.round(parseFloat(hslJson.s)), l: Math.round(parseFloat(hslJson.l)) },
             name: req.body.name
         }
 
@@ -171,7 +172,8 @@ module.exports = (colours) => {
 
             colours = JSON.parse(fs.readFileSync('./json/colours.json', 'utf8'));
 
-            res.result(status.SUCCESS.status, null, 'Successfully created new colour', status.SUCCESS.statusName);
+            // success create a new colour, and return the colour url
+            res.result(status.SUCCESS.status, 'http://localhost:9000/colours/' + req.body.colorId, 'Successfully created new colour', status.SUCCESS.statusName);
         });
     })
 
@@ -183,32 +185,12 @@ module.exports = (colours) => {
             return;
         }
 
-        // get old colour
-        const colourId = parseInt(req.params.colourId);
-        const colour = colours.find((colour) => colour.colorId === colourId);
-
-        // if colour not exist, add a new colour
-        if(!colour) {
-
-
-
-            return;
-        }
-        
         // check if the name is empty
         if(req.body.name === '') {
             res.result(status.EMPTY_COLOUR_NAME.status, null, 'Colour name is not exist', status.EMPTY_COLOUR_NAME.statusName);
             return;
         }
 
-        // check if colour name is exist
-        if(req.body.name !== colour.name) {
-            if(validator.nameValidator(req.body.colorId, req.body.name)) {
-                res.result(status.NAME_EXIST.status, null, 'Colour name is exist', status.NAME_EXIST.statusName);
-                return;
-            }
-        }
-        
         // check if colour hex is valid
         if(!validator.hexValidator(req.body.hexString)) {
             res.result(status.INVALID_HEX.status, null, 'Colour hex is invalid', status.INVALID_HEX.statusName);
@@ -233,6 +215,56 @@ module.exports = (colours) => {
             return;
         }
 
+        // get old colour
+        const colourId = parseInt(req.params.colourId);
+        const colour = colours.find((colour) => colour.colorId === colourId);
+
+        // if colour not exist, not update, create a new colour
+        if(!colour) {
+            // check if colour name is exist
+            if(validator.nameValidator(req.body.colorId, req.body.name)) {
+                res.result(status.NAME_EXIST.status, null, 'Colour name is exist', status.NAME_EXIST.statusName);
+                return;
+            }
+
+            // create new colour
+            colours = JSON.parse(fs.readFileSync('./json/colours.json', 'utf8'));
+            
+            rgbJson = JSON.parse(req.body.rgb)
+            hslJson = JSON.parse(req.body.hsl)
+
+            const newColour = {
+                colorId: parseInt(req.body.colorId),
+                hexString: req.body.hexString,
+                rgb: { r: parseInt(rgbJson.r), g: parseInt(rgbJson.g), b: parseInt(rgbJson.b) },
+                hsl: { h: Math.round(parseFloat(hslJson.h)), s: Math.round(parseFloat(hslJson.s)), l: Math.round(parseFloat(hslJson.l)) },
+                name: req.body.name
+            }
+
+            colours.push(newColour)
+
+            fs.writeFile('./json/colours.json', JSON.stringify(colours), (err) => {
+                if(err) {
+                    res.result(status.SERVER_ERROR.status, null, 'Update colour failed with server error', status.SERVER_ERROR.statusName);
+                    return;
+                }
+
+                colours = JSON.parse(fs.readFileSync('./json/colours.json', 'utf8'));
+
+                // success create a new colour, and return the colour url
+                res.result(status.SUCCESS.status, 'http://localhost:9000/colours/' + req.body.colorId, 'Successfully created new colour', status.SUCCESS.statusName);
+                return;
+            });
+        }
+        
+        // check if colour name is exist
+        if(req.body.name !== colour.name) {
+            if(validator.nameValidator(req.body.colorId, req.body.name)) {
+                res.result(status.NAME_EXIST.status, null, 'Colour name is exist', status.NAME_EXIST.statusName);
+                return;
+            }
+        }
+
         // update colour
         colours = JSON.parse(fs.readFileSync('./json/colours.json', 'utf8'));
         const updateColour = colours.find((colour) => colour.colorId === colourId);
@@ -241,7 +273,7 @@ module.exports = (colours) => {
         rgbJson = JSON.parse(req.body.rgb)
         updateColour.rgb = { r: parseInt(rgbJson.r), g: parseInt(rgbJson.g), b: parseInt(rgbJson.b) };
         hslJson = JSON.parse(req.body.hsl)
-        updateColour.hsl = { h: parseFloat(hslJson.h), s: parseFloat(hslJson.s), l: parseFloat(hslJson.l) };
+        updateColour.hsl = { h: Math.round(parseFloat(hslJson.h)), s: Math.round(parseFloat(hslJson.s)), l: Math.round(parseFloat(hslJson.l)) };
         updateColour.name = req.body.name;
 
         fs.writeFile('./json/colours.json', JSON.stringify(colours), (err) => {

@@ -106,9 +106,9 @@ function matchValidator(hex, rgb, hsl) {
     const g = parseInt(rgb.g);
     const b = parseInt(rgb.b);
 
-    const h = parseFloat(hsl.h);
-    const s = parseFloat(hsl.s);
-    const l = parseFloat(hsl.l);
+    const h = parseInt(Math.round(hsl.h));
+    const s = parseInt(Math.round(hsl.s));
+    const l = parseInt(Math.round(hsl.l));
 
     // convert hex color to RGB and HSL
     const hexRgb = chromatism.convert(hex).rgb;
@@ -120,10 +120,10 @@ function matchValidator(hex, rgb, hsl) {
     }
 
     // compare hex color to hsl color
-    if(parseFloat(hexHsl.h) !== h || parseFloat(hexHsl.s) !== s || parseFloat(hexHsl.l !== l)) {
+    if(parseInt(Math.round(hexHsl.h)) !== h || parseInt(Math.round(hexHsl.s)) !== s || parseInt(Math.round(hexHsl.l)) !== l) {
         return false;
     }
-
+    
     return true;
 }
 
